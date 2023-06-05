@@ -1,15 +1,11 @@
 import torch
 import os
-
-# from skimage import io as skio
 from torch.autograd import Variable
 from torchvision import transforms
 import torch.nn.functional as F
 import numpy as np
 from sagemaker_inference import encoder
-
 from data_loader_cache import normalize, im_preprocess
-
 from models import *
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -36,21 +32,16 @@ transform = transforms.Compose([GOSNormalize([0.5, 0.5, 0.5],[1.0, 1.0, 1.0])])
 def input_fn(request_body, request_content_type):
     import io
     from PIL import Image
-
-    print("input function")
-    f = io.BytesIO(request_body)
     
-    print("opening image")
+    # Read image as stream
+    f = io.BytesIO(request_body)   
     input_image = Image.open(f).convert("RGB")
     
-    print("Converting image to np array")
-    # input_image = np.array(input_image)
-    
-    print("torch.divide")
+    # Read in and process image
+    input_image = np.array(input_image)
     im, im_shp = im_preprocess(input_image, [1024, 1024])
     im = torch.divide(im,255.0)
     shape = torch.from_numpy(np.array(im_shp))
-    print("input function end")
     
     output = {}
     output['image_tensor'] = transform(im).unsqueeze(0)
@@ -58,26 +49,19 @@ def input_fn(request_body, request_content_type):
     return output
 
 
-def output_fn(prediction, content_type):
-    print("output function")
-    print("Content type: "+str(content_type))
-    print("size of prediction")
-    print(getsizeof(prediction))
-
-    
+def output_fn(prediction, content_type):    
     return encoder.encode(prediction, content_type)
 
 def model_fn(model_dir):
-    print("Loading model.")
     net = ISNetDIS()
-    print("Model loaded.")
     net.to(device)
 
-    print("Loading model weights.")
     net.load_state_dict(torch.load(os.path.join(model_dir, 'model.pth'), map_location=device))
     return net.to(device)
 
 def predict_fn(data, model):
+    model.eval()
+    
     inputs_val = data['image_tensor'].type(torch.FloatTensor)
     
     inputs_val_v = Variable(data['image_tensor'], requires_grad=False).to(device) # wrap inputs in Variable
