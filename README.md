@@ -4,7 +4,7 @@ In this this repository, we will go through the steps to implement the DIS backg
 
 ---
 
-In the `dis-background-removal-sagemaker.ipynb` notebook, we will implement asynchronous inferencing using the DIS background removal tool in Amazon SageMaker. By using Amazon SageMaker Asynchronous inference, you can process a large batch of images at scale with large payload sizes (up to 1GB) with near real-time latency.
+In the `dis-background-removal-sagemaker-inference.ipynb` notebook, we will implement asynchronous inferencing using the DIS background removal tool in Amazon SageMaker. By using Amazon SageMaker Asynchronous inference, you can process a large batch of images at scale with large payload sizes (up to 1GB) with near real-time latency.
 
 We will walkthrough on how to package a pre-train DIS model, implement the inferencing with a custom inference script and deploy out asynchronous endpoint.
 
