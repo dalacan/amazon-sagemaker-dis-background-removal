@@ -1,4 +1,4 @@
-# Amazon Ssagemaker DIS background removal
+# Amazon Sagemaker DIS background removal
 
 In this this repository, we will go through the steps to implement the DIS background removal model in Amazon SageMaker.
 
